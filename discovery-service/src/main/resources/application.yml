@@ -1,0 +1,19 @@
+# server
+server:
+  port: 8761
+
+# spring
+spring:
+  application:
+    name: discovery-service
+
+# eureka
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+# logging
+logging:
+  level:
+    com.hw: debug

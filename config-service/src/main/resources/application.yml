@@ -14,7 +14,7 @@ spring:
         native:
           search-locations:
             - file:///Users/hwpark/Documents/study/portfolio-workspace/config
-            - file:///Users/hwpark/Documents/study/portfolio-workspace/config/user-serivce
+            - file:///Users/hwpark/Documents/study/portfolio-workspace/config/user-service
   rabbitmq:
     host: 127.0.0.1
     port: 5672

@@ -1,0 +1,31 @@
+# server
+server:
+  port: 0 # random port 사용 - instance 가 여러개라도 eureka dashboard 에 단일로 표기됨
+
+## management
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - refresh
+          - health
+          - beans
+          - busrefresh
+          - info
+
+# spring
+spring:
+  application:
+    name: user-service
+
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+
+
+## logging
+logging:
+  level:
+    com.hw: debug

@@ -1,0 +1,31 @@
+# server
+server:
+  port: 8888
+
+# spring
+spring:
+  application:
+    name: config-service
+  profiles:
+    active: native # 일단, git 말고 local file system 으로 사용하자 - 추후 변경 예정
+  cloud:
+    config:
+      server:
+        native:
+          search-locations:
+            - file:///Users/hwpark/Documents/study/portfolio-workspace/config
+            - file:///Users/hwpark/Documents/study/portfolio-workspace/config/user-serivce
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: username
+    password: password
+
+## management
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - busrefresh

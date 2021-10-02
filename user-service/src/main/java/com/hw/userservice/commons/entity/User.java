@@ -1,5 +1,8 @@
 package com.hw.userservice.commons.entity;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -29,6 +32,10 @@ public class User {
 
   protected User() {}
 
+  public static Builder builder() {
+    return new Builder();
+  }
+
   public Long getId() {
     return id;
   }
@@ -43,6 +50,16 @@ public class User {
 
   public String getName() {
     return name;
+  }
+
+  @Override
+  public String toString() {
+    return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
+        .append("id", id)
+        .append("userId", userId)
+        .append("password", password)
+        .append("name", name)
+        .toString();
   }
 
   public static class Builder {

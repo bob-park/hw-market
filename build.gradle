@@ -18,6 +18,7 @@ allprojects {
     ext {
         springCloudConfigVersion = '3.0.3'
         springCloudNetflixEurekaVersion = '3.0.3'
+        p6spyVersion = "1.7.1"
 
     }
 }

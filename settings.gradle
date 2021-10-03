@@ -7,7 +7,7 @@ pluginManagement {
 rootProject.name = 'hw-market'
 
 // modules
-include 'discovery-service'
-include 'config-service'
-include 'api-gateway-service'
-include 'user-service'
+include 'hw-market-discovery-service'
+include 'hw-market-config-service'
+include 'hw-market-api-gateway-service'
+include 'hw-market-user-service'

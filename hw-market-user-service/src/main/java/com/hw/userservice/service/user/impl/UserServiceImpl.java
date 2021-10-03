@@ -65,14 +65,23 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+  public ResponseUser login(String userId, String password) {
 
     User user =
         userRepository
-            .findByUserId(username)
-            .orElseThrow(() -> new UsernameNotFoundException(username));
+            .findByUserId(userId)
+            .orElseThrow(() -> new UsernameNotFoundException(userId));
 
-    return new org.springframework.security.core.userdetails.User(
-        user.getUserId(), user.getPassword(), true, true, true, true, new ArrayList<>());
+    if (!passwordEncoder.matches(password, user.getPassword())) {
+      throw new IllegalArgumentException("Not correct password.");
+    }
+
+    return ResponseUser.builder()
+        .userId(user.getUserId())
+        .name(user.getName())
+        .email(user.getEmail())
+        .phone(user.getPhone())
+        .role(user.getRole())
+        .build();
   }
 }

@@ -4,10 +4,11 @@ import com.hw.userservice.commons.dto.user.RequestUser;
 import com.hw.userservice.commons.dto.user.ResponseUser;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
-public interface UserService extends UserDetailsService {
+public interface UserService {
 
-    ResponseUser createUser(RequestUser requestUser);
+  ResponseUser createUser(RequestUser requestUser);
 
-    ResponseUser getUserByUserId(String userId);
+  ResponseUser login(String userId, String password);
 
+  ResponseUser getUserByUserId(String userId);
 }

@@ -1,5 +1,6 @@
 package com.hw.userservice.commons.dto.user;
 
+import com.hw.userservice.commons.entity.Role;
 import com.hw.userservice.commons.entity.User;
 
 import javax.validation.constraints.Email;
@@ -21,6 +22,8 @@ public class RequestUser {
   private String phone;
 
   @Email private String email;
+
+  private Role role;
 
   public String getUserId() {
     return userId;
@@ -62,6 +65,15 @@ public class RequestUser {
     this.email = email;
   }
 
+  public RequestUser setRole(Role role) {
+    this.role = role;
+    return this;
+  }
+
+  public Role getRole() {
+    return role;
+  }
+
   public RequestUser encryptPassword(String encode) {
     setPassword(encode);
     return this;
@@ -75,6 +87,7 @@ public class RequestUser {
         .password(getPassword())
         .phone(getPhone())
         .email(getEmail())
+        .role(getRole())
         .build();
   }
 }

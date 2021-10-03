@@ -76,3 +76,9 @@ project(':hw-market-user-service') {
         implementation project(':hw-market-core')
     }
 }
+
+project(':hw-market-api-gateway-service') {
+    dependencies {
+        implementation project(':hw-market-core')
+    }
+}

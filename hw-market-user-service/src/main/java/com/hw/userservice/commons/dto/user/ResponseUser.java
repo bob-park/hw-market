@@ -1,5 +1,7 @@
 package com.hw.userservice.commons.dto.user;
 
+import com.hw.userservice.commons.entity.Role;
+
 public class ResponseUser {
 
   private final String userId;
@@ -7,15 +9,18 @@ public class ResponseUser {
   private final String phone;
   private final String email;
 
+  private final Role role;
+
   private ResponseUser(Builder builder) {
-    this(builder.userId, builder.name, builder.phone, builder.email);
+    this(builder.userId, builder.name, builder.phone, builder.email, builder.role);
   }
 
-  private ResponseUser(String userId, String name, String phone, String email) {
+  private ResponseUser(String userId, String name, String phone, String email, Role role) {
     this.userId = userId;
     this.name = name;
     this.phone = phone;
     this.email = email;
+    this.role = role;
   }
 
   public static Builder builder() {
@@ -38,11 +43,16 @@ public class ResponseUser {
     return email;
   }
 
+  public Role getRole() {
+    return role;
+  }
+
   public static class Builder {
     private String userId;
     private String name;
     private String phone;
     private String email;
+    private Role role;
 
     public Builder userId(String userId) {
       this.userId = userId;
@@ -61,6 +71,11 @@ public class ResponseUser {
 
     public Builder email(String email) {
       this.email = email;
+      return this;
+    }
+
+    public Builder role(Role role) {
+      this.role = role;
       return this;
     }
 

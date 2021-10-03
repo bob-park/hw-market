@@ -19,16 +19,16 @@ public class ApiResult<T> {
     return new ApiResult<>(null, new Error(throwable));
   }
 
+  public static <T> ApiResult<T> error(String description) {
+    return error(description, null);
+  }
+
   public static <T> ApiResult<T> error(String description, String detail) {
     return new ApiResult<>(null, new Error(description, detail));
   }
 
   public static <T> ApiResult<T> error(Error error) {
     return new ApiResult<>(null, error);
-  }
-
-  public static <T> ApiResult<T> error(T body, Throwable throwable) {
-    return new ApiResult<>(body, new Error(throwable));
   }
 
   public T getResult() {

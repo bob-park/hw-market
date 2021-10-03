@@ -7,6 +7,8 @@ import org.checkerframework.common.aliasing.qual.Unique;
 
 import javax.persistence.*;
 
+import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+
 @Entity
 @Table(name = "users")
 public class User extends BaseTimeEntity {
@@ -27,17 +29,29 @@ public class User extends BaseTimeEntity {
 
   private String email;
 
+  @Enumerated(EnumType.STRING)
+  private Role role;
+
   private User(Builder builder) {
-    this(null, builder.userId, builder.password, builder.name, builder.phone, builder.email);
+    this(
+        null,
+        builder.userId,
+        builder.password,
+        builder.name,
+        builder.phone,
+        builder.email,
+        builder.role);
   }
 
-  private User(Long id, String userId, String password, String name, String phone, String email) {
+  private User(
+      Long id, String userId, String password, String name, String phone, String email, Role role) {
     this.id = id;
     this.userId = userId;
     this.password = password;
     this.name = name;
     this.phone = phone;
     this.email = email;
+    this.role = defaultIfNull(role, Role.USER);
   }
 
   protected User() {}
@@ -70,6 +84,10 @@ public class User extends BaseTimeEntity {
     return email;
   }
 
+  public Role getRole() {
+    return role;
+  }
+
   @Override
   public String toString() {
     return new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
@@ -79,6 +97,7 @@ public class User extends BaseTimeEntity {
         .append("name", name)
         .append("phone", phone)
         .append("email", email)
+        .append("role", role)
         .toString();
   }
 
@@ -90,6 +109,8 @@ public class User extends BaseTimeEntity {
 
     private String phone;
     private String email;
+
+    private Role role;
 
     public Builder userId(String userId) {
       this.userId = userId;
@@ -113,6 +134,11 @@ public class User extends BaseTimeEntity {
 
     public Builder email(String email) {
       this.email = email;
+      return this;
+    }
+
+    public Builder role(Role role) {
+      this.role = role;
       return this;
     }
 

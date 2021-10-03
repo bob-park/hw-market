@@ -1,58 +1,91 @@
 package com.hw.userservice.commons.security.config;
 
-import com.hw.userservice.commons.security.filter.AuthenticationFilter;
+import com.hw.userservice.commons.security.filter.SecurityAuthenticationFilter;
+import com.hw.userservice.commons.security.handler.EntryPointUnauthorizedHandler;
+import com.hw.userservice.commons.security.handler.TokenAccessDeniedHandler;
+import com.hw.userservice.commons.security.model.SecurityToken;
+import com.hw.userservice.commons.security.provider.SecurityAuthenticationProvider;
 import com.hw.userservice.service.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import javax.ws.rs.HttpMethod;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
   private final Environment env;
-  private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-  private final UserService userService;
+  private final EntryPointUnauthorizedHandler entryPointUnauthorizedHandler;
+  private final TokenAccessDeniedHandler accessDeniedHandler;
 
   public SecurityConfiguration(
-      Environment env, BCryptPasswordEncoder bCryptPasswordEncoder, UserService userService) {
+      Environment env,
+      EntryPointUnauthorizedHandler entryPointUnauthorizedHandler,
+      TokenAccessDeniedHandler accessDeniedHandler) {
     this.env = env;
-    this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    this.userService = userService;
+    this.entryPointUnauthorizedHandler = entryPointUnauthorizedHandler;
+    this.accessDeniedHandler = accessDeniedHandler;
+  }
+
+  @Autowired
+  public void configureAuthentication(
+      AuthenticationManagerBuilder builder, SecurityAuthenticationProvider authenticationProvider) {
+    builder.authenticationProvider(authenticationProvider);
+  }
+
+  @Bean
+  @Override
+  public AuthenticationManager authenticationManagerBean() throws Exception {
+    return super.authenticationManagerBean();
   }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http.csrf().disable();
+    http.csrf().disable().headers().disable().cors().disable();
+
+    http.exceptionHandling()
+        .accessDeniedHandler(accessDeniedHandler)
+        .authenticationEntryPoint(entryPointUnauthorizedHandler);
+
+    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+    http.formLogin().disable();
 
     http.authorizeRequests()
-        .antMatchers("/actuator/**") // actuator 적용 제외
+        .antMatchers("/actuator/**", "/login") // actuator 적용 제외
         .permitAll()
-        .antMatchers("/**")
-        .permitAll()
-        .and()
-        .addFilter(getAuthenticationFilter());
+        .antMatchers(HttpMethod.POST, "/users")
+        .hasRole("ADMIN")
+//        .permitAll()
+        .antMatchers("/users/**")
+        .hasAnyRole("ADMIN", "USER")
+        .anyRequest()
+        .permitAll();
 
-    //        .hasIpAddress(env.getProperty("gateway.ip")) // 해당 IP 가 들어있는 경우만 처리
-    //        .and(); // 필터 추가
-
-    // h2-console 을 이용할 경우 반드시 적용해야함
-    // frame 으로 구성되어있는 경우 인증때문에 정상적으로 동작안함
-    http.headers().frameOptions().disable();
+    http.addFilterBefore(
+        getSecurityAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
   }
 
-  @Override
-  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-    auth.userDetailsService(userService).passwordEncoder(bCryptPasswordEncoder);
+  @Bean
+  public SecurityAuthenticationProvider getSecurityAuthenticationProvider(
+      SecurityToken token, UserService userService) {
+    return new SecurityAuthenticationProvider(token, userService);
   }
 
-  private AuthenticationFilter getAuthenticationFilter() throws Exception {
-
-    return new AuthenticationFilter(env, userService, authenticationManager());
+  @Bean
+  public SecurityAuthenticationFilter getSecurityAuthenticationFilter() {
+    return new SecurityAuthenticationFilter();
   }
 }

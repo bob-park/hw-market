@@ -1,11 +1,15 @@
 package com.hw.userservice.controller.user;
 
+import com.hw.core.model.api.response.ApiResult;
+import com.hw.userservice.commons.dto.user.RequestUser;
+import com.hw.userservice.commons.dto.user.ResponseUser;
 import com.hw.userservice.service.user.UserService;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+
+import static com.hw.core.model.api.response.ApiResult.ok;
 
 @RestController
 @RequestMapping("users")
@@ -19,9 +23,9 @@ public class UserController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public String createUser() {
-    userService.createUser();
+  public ApiResult<ResponseUser> createUser(
+      @Valid @RequestBody RequestUser requestUser) {
 
-    return "OK";
+    return ok(userService.createUser(requestUser));
   }
 }

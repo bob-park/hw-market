@@ -36,6 +36,8 @@ spring:
     password: password
   cloud:
     gateway:
+      default-filters:
+        - name: GlobalFilter
       routes:
         - id: user-sercice # create user
           uri: lb://user-service

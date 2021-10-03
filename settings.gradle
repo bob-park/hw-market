@@ -11,3 +11,5 @@ include 'hw-market-discovery-service'
 include 'hw-market-config-service'
 include 'hw-market-api-gateway-service'
 include 'hw-market-user-service'
+include 'hw-market-core'
+

@@ -70,3 +70,9 @@ allprojects {
     }
 
 }
+
+project(':hw-market-user-service') {
+    dependencies {
+        implementation project(':hw-market-core')
+    }
+}

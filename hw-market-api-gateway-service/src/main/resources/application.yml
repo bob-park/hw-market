@@ -39,14 +39,6 @@ spring:
       default-filters:
         - name: GlobalFilter
       routes:
-        - id: user-sercice
-          uri: lb://user-service
-          predicates:
-            - Path=/user-service/users/**
-            - Method=GET, POST
-          filters:
-            - RemoveRequestHeader=Cookie
-            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
         - id: user-sercice # user login
           uri: lb://user-service
           predicates:
@@ -55,6 +47,25 @@ spring:
           filters:
             - RemoveRequestHeader=Cookie
             - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user-sercice
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/users
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user-sercice
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/**
+            - Method=GET, POST, PUT, DELETE
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+            - AuthorizationHeaderFilter
+
+
 
 
 # logging

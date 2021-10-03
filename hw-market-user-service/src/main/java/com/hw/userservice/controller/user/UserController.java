@@ -23,9 +23,13 @@ public class UserController {
 
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
-  public ApiResult<ResponseUser> createUser(
-      @Valid @RequestBody RequestUser requestUser) {
+  public ApiResult<ResponseUser> createUser(@Valid @RequestBody RequestUser requestUser) {
 
     return ok(userService.createUser(requestUser));
+  }
+
+  @GetMapping(path = "{userId}")
+  public ApiResult<ResponseUser> getUser(@PathVariable String userId) {
+    return ok(userService.getUserByUserId(userId));
   }
 }

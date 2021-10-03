@@ -39,10 +39,18 @@ spring:
       default-filters:
         - name: GlobalFilter
       routes:
-        - id: user-sercice # create user
+        - id: user-sercice
           uri: lb://user-service
           predicates:
-            - Path=/user-service/users
+            - Path=/user-service/users/**
+            - Method=GET, POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user-sercice # user login
+          uri: lb://user-service
+          predicates:
+            - Path=/user-service/login
             - Method=POST
           filters:
             - RemoveRequestHeader=Cookie

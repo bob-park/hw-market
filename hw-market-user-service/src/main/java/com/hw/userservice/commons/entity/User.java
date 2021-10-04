@@ -1,5 +1,6 @@
 package com.hw.userservice.commons.entity;
 
+import com.hw.userservice.commons.entity.base.BaseEntity;
 import com.hw.userservice.commons.entity.base.BaseTimeEntity;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -11,7 +12,7 @@ import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
 
 @Entity
 @Table(name = "users")
-public class User extends BaseTimeEntity {
+public class User extends BaseEntity {
 
   @Id @GeneratedValue private Long id;
 

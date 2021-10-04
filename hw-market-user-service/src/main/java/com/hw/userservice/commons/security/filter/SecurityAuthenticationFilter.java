@@ -2,7 +2,9 @@ package com.hw.userservice.commons.security.filter;
 
 import com.hw.userservice.commons.security.model.SecurityAuthentication;
 import com.hw.userservice.commons.security.model.SecurityAuthenticationToken;
-import com.hw.userservice.commons.security.model.SecurityToken;
+import com.hw.userservice.commons.security.util.JwtUtil;
+import io.jsonwebtoken.Claims;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +24,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import static java.util.Objects.nonNull;
-import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 
 public class SecurityAuthenticationFilter extends GenericFilterBean {
@@ -39,9 +39,7 @@ public class SecurityAuthenticationFilter extends GenericFilterBean {
 
   private final Logger log = LoggerFactory.getLogger(getClass());
 
-  private SecurityToken securityToken;
-
-  public SecurityAuthenticationFilter() {}
+  private JwtUtil jwtUtil;
 
   @Override
   public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
@@ -53,18 +51,18 @@ public class SecurityAuthenticationFilter extends GenericFilterBean {
       String authorizationToken = obtainAuthorizationToken(request);
       if (authorizationToken != null) {
         try {
-          SecurityToken.Claims claims = verify(request, authorizationToken);
+          Claims claims = verify(authorizationToken);
           log.debug("Jwt parse result: {}", claims);
 
           // 만료 10분 전
           if (canRefresh(claims, (6_000 * 10))) {
-            String refreshedToken = securityToken.refreshToken(authorizationToken);
+            String refreshedToken = jwtUtil.refreshToken(authorizationToken);
             response.setHeader(AUTH_TOKEN_HEADER, refreshedToken);
           }
 
-          String userId = claims.getUserId();
-          String name = claims.getName();
-          String email = claims.getEmail();
+          String userId = claims.get("userId", String.class);
+          String name = claims.get("name", String.class);
+          String email = claims.get("email", String.class);
 
           List<GrantedAuthority> authorities = obtainAuthorities(claims);
 
@@ -90,8 +88,8 @@ public class SecurityAuthenticationFilter extends GenericFilterBean {
     chain.doFilter(request, response);
   }
 
-  private boolean canRefresh(SecurityToken.Claims claims, long refreshRangeMillis) {
-    long exp = claims.exp();
+  private boolean canRefresh(Claims claims, long refreshRangeMillis) {
+    long exp = claims.getExpiration().getTime();
     if (exp > 0) {
       long remain = exp - System.currentTimeMillis();
       return remain < refreshRangeMillis;
@@ -99,11 +97,12 @@ public class SecurityAuthenticationFilter extends GenericFilterBean {
     return false;
   }
 
-  private List<GrantedAuthority> obtainAuthorities(SecurityToken.Claims claims) {
-    String[] roles = claims.getRoles();
-    return roles == null || roles.length == 0
+  private List<GrantedAuthority> obtainAuthorities(Claims claims) {
+    String role = claims.get("role", String.class);
+
+    return StringUtils.isEmpty(role)
         ? Collections.emptyList()
-        : Arrays.stream(roles).map(SimpleGrantedAuthority::new).collect(toList());
+        : Collections.singletonList(new SimpleGrantedAuthority(role));
   }
 
   private String obtainAuthorizationToken(HttpServletRequest request) {
@@ -130,13 +129,12 @@ public class SecurityAuthenticationFilter extends GenericFilterBean {
     return null;
   }
 
-  private SecurityToken.Claims verify(HttpServletRequest request, String token) {
-    return securityToken.verify(token);
+  private Claims verify(String token) {
+    return jwtUtil.verify(token);
   }
 
   @Autowired
-  public SecurityAuthenticationFilter securityToken(SecurityToken securityToken) {
-    this.securityToken = securityToken;
-    return this;
+  public void setJwtUtil(JwtUtil jwtUtil) {
+    this.jwtUtil = jwtUtil;
   }
 }

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.hw.userservice.commons.security.model.SecurityToken;
+import com.hw.userservice.commons.security.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,7 +59,7 @@ public class AppConfiguration {
   }
 
   @Bean
-  public SecurityToken securityToken() {
-    return new SecurityToken(issuer, secret, expirationTime.intValue());
+  public JwtUtil jwtUtil() {
+    return new JwtUtil(secret, issuer, expirationTime);
   }
 }

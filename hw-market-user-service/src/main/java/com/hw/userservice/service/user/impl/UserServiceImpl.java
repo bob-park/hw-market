@@ -1,6 +1,7 @@
 package com.hw.userservice.service.user.impl;
 
 import com.hw.core.exception.NotFoundException;
+import com.hw.core.model.commons.Id;
 import com.hw.userservice.commons.dto.user.RequestUser;
 import com.hw.userservice.commons.dto.user.ResponseUser;
 import com.hw.userservice.commons.entity.User;
@@ -42,9 +43,11 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public ResponseUser getById(Long id) {
+  public ResponseUser getById(Id<User, Long> id) {
     User user =
-        userRepository.findById(id).orElseThrow(() -> new NotFoundException(User.class, id));
+        userRepository
+            .findById(id.getValue())
+            .orElseThrow(() -> new NotFoundException(User.class, id.getValue()));
 
     return toUserDto(user);
   }

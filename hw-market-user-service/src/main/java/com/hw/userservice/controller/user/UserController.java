@@ -1,8 +1,10 @@
 package com.hw.userservice.controller.user;
 
 import com.hw.core.model.api.response.ApiResult;
+import com.hw.core.model.commons.Id;
 import com.hw.userservice.commons.dto.user.RequestUser;
 import com.hw.userservice.commons.dto.user.ResponseUser;
+import com.hw.userservice.commons.entity.User;
 import com.hw.userservice.commons.security.model.SecurityAuthentication;
 import com.hw.userservice.service.user.UserService;
 import org.springframework.http.HttpStatus;
@@ -32,7 +34,7 @@ public class UserController {
 
   @GetMapping(path = "{id}")
   public ApiResult<ResponseUser> getUser(@PathVariable Long id) {
-    return ok(userService.getById(id));
+    return ok(userService.getById(Id.of(User.class, id)));
   }
 
   @GetMapping(path = "me")

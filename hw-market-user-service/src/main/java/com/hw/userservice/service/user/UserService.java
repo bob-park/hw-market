@@ -1,7 +1,9 @@
 package com.hw.userservice.service.user;
 
+import com.hw.core.model.commons.Id;
 import com.hw.userservice.commons.dto.user.RequestUser;
 import com.hw.userservice.commons.dto.user.ResponseUser;
+import com.hw.userservice.commons.entity.User;
 
 public interface UserService {
 
@@ -11,5 +13,5 @@ public interface UserService {
 
   ResponseUser getUserByUserId(String userId);
 
-  ResponseUser getById(Long id);
+  ResponseUser getById(Id<User, Long> id);
 }

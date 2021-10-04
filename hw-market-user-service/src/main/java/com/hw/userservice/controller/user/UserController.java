@@ -2,6 +2,7 @@ package com.hw.userservice.controller.user;
 
 import com.hw.core.model.api.response.ApiResult;
 import com.hw.core.model.commons.Id;
+import com.hw.userservice.commons.dto.user.RequestModifyUser;
 import com.hw.userservice.commons.dto.user.RequestUser;
 import com.hw.userservice.commons.dto.user.ResponseUser;
 import com.hw.userservice.commons.entity.User;
@@ -35,6 +36,12 @@ public class UserController {
   @GetMapping(path = "{id}")
   public ApiResult<ResponseUser> getUser(@PathVariable Long id) {
     return ok(userService.getById(Id.of(User.class, id)));
+  }
+
+  @PutMapping(path = "{id}")
+  public ApiResult<ResponseUser> modifyUser(
+      @PathVariable Long id, @RequestBody RequestModifyUser modifyUser) {
+    return ok(userService.modifyUser(Id.of(User.class, id), modifyUser));
   }
 
   @GetMapping(path = "me")

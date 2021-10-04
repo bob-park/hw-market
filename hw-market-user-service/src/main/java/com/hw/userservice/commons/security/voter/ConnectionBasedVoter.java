@@ -2,12 +2,14 @@ package com.hw.userservice.commons.security.voter;
 
 import com.google.common.base.Preconditions;
 import com.hw.core.model.commons.Id;
+import com.hw.userservice.commons.entity.Role;
 import com.hw.userservice.commons.entity.User;
 import com.hw.userservice.commons.security.model.SecurityAuthentication;
 import com.hw.userservice.commons.security.model.SecurityAuthenticationToken;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -18,6 +20,8 @@ import java.util.function.Function;
 import static org.apache.commons.lang3.ClassUtils.isAssignable;
 
 public class ConnectionBasedVoter implements AccessDecisionVoter<FilterInvocation> {
+
+  private final SimpleGrantedAuthority GRANTE_ADMIN = new SimpleGrantedAuthority(Role.ADMIN.getValue());
 
   private final RequestMatcher requiresAuthorizationRequestMatcher;
 
@@ -53,8 +57,9 @@ public class ConnectionBasedVoter implements AccessDecisionVoter<FilterInvocatio
     SecurityAuthentication jwtAuth = (SecurityAuthentication) authentication.getPrincipal();
     Id<User, Long> targetId = obtainTargetId(request);
 
-    // 본인 자신
-    if (jwtAuth.getId().equals(targetId)) {
+    // 본인 자신 또는 ADMIN 권한인 경우
+    if (jwtAuth.getId().equals(targetId)
+        || authentication.getAuthorities().contains(GRANTE_ADMIN)) {
       return ACCESS_GRANTED;
     }
 

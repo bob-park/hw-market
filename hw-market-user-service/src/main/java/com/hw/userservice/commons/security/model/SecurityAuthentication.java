@@ -1,6 +1,7 @@
 package com.hw.userservice.commons.security.model;
 
 import com.hw.core.model.commons.Id;
+import com.hw.userservice.commons.entity.Role;
 import com.hw.userservice.commons.entity.User;
 
 public class SecurityAuthentication {

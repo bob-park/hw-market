@@ -3,8 +3,8 @@ package com.hw.userservice.commons.security.config;
 import com.hw.userservice.commons.security.filter.SecurityAuthenticationFilter;
 import com.hw.userservice.commons.security.handler.EntryPointUnauthorizedHandler;
 import com.hw.userservice.commons.security.handler.TokenAccessDeniedHandler;
-import com.hw.userservice.commons.security.model.SecurityToken;
 import com.hw.userservice.commons.security.provider.SecurityAuthenticationProvider;
+import com.hw.userservice.commons.security.util.JwtUtil;
 import com.hw.userservice.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.ws.rs.HttpMethod;
@@ -68,7 +67,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .permitAll()
         .antMatchers(HttpMethod.POST, "/users")
         .hasRole("ADMIN")
-//        .permitAll()
+        //        .permitAll()
         .antMatchers("/users/**")
         .hasAnyRole("ADMIN", "USER")
         .anyRequest()
@@ -80,8 +79,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
   @Bean
   public SecurityAuthenticationProvider getSecurityAuthenticationProvider(
-      SecurityToken token, UserService userService) {
-    return new SecurityAuthenticationProvider(token, userService);
+      JwtUtil jwtUtil, UserService userService) {
+    return new SecurityAuthenticationProvider(jwtUtil, userService);
   }
 
   @Bean

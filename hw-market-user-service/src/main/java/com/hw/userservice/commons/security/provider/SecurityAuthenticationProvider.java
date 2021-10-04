@@ -2,11 +2,8 @@ package com.hw.userservice.commons.security.provider;
 
 import com.hw.core.exception.NotFoundException;
 import com.hw.userservice.commons.dto.user.ResponseUser;
-import com.hw.userservice.commons.entity.Role;
-import com.hw.userservice.commons.security.model.AuthenticationRequest;
-import com.hw.userservice.commons.security.model.AuthenticationResult;
-import com.hw.userservice.commons.security.model.SecurityAuthenticationToken;
-import com.hw.userservice.commons.security.model.SecurityToken;
+import com.hw.userservice.commons.security.model.*;
+import com.hw.userservice.commons.security.util.JwtUtil;
 import com.hw.userservice.service.user.UserService;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -21,11 +18,11 @@ import static org.springframework.security.core.authority.AuthorityUtils.createA
 
 public class SecurityAuthenticationProvider implements AuthenticationProvider {
 
-  private final SecurityToken securityToken;
+  private final JwtUtil jwtUtil;
   private final UserService userService;
 
-  public SecurityAuthenticationProvider(SecurityToken securityToken, UserService userService) {
-    this.securityToken = securityToken;
+  public SecurityAuthenticationProvider(JwtUtil jwtUtil, UserService userService) {
+    this.jwtUtil = jwtUtil;
     this.userService = userService;
   }
 
@@ -48,7 +45,7 @@ public class SecurityAuthenticationProvider implements AuthenticationProvider {
           new SecurityAuthenticationToken(
               user.getUserId(), null, createAuthorityList(user.getRole().getValue()));
 
-      String apiToken = newApiToken(securityToken, user, new String[] {user.getRole().getValue()});
+      String apiToken = newToken(user);
 
       authenticated.setDetails(new AuthenticationResult(apiToken, user));
 
@@ -62,9 +59,11 @@ public class SecurityAuthenticationProvider implements AuthenticationProvider {
     }
   }
 
-  private String newApiToken(SecurityToken token, ResponseUser user, String[] roles) {
-    SecurityToken.Claims claims =
-        SecurityToken.Claims.of(user.getUserId(), user.getName(), user.getEmail(), roles);
-    return token.newToken(claims);
+  private String newToken(ResponseUser user) {
+
+    JwtClaim jwtClaim =
+        new JwtClaim(user.getUserId(), user.getName(), user.getEmail(), user.getRole());
+
+    return jwtUtil.newToken(jwtClaim.toClaims());
   }
 }

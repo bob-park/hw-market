@@ -2,11 +2,13 @@ package com.hw.userservice.service.user.impl;
 
 import com.hw.core.exception.NotFoundException;
 import com.hw.core.model.commons.Id;
+import com.hw.userservice.commons.dto.user.RequestModifyUser;
 import com.hw.userservice.commons.dto.user.RequestUser;
 import com.hw.userservice.commons.dto.user.ResponseUser;
 import com.hw.userservice.commons.entity.User;
 import com.hw.userservice.repository.user.UserRepository;
 import com.hw.userservice.service.user.UserService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -38,6 +40,22 @@ public class UserServiceImpl implements UserService {
     log.debug("create user: {}", user);
 
     userRepository.save(user);
+
+    return toUserDto(user);
+  }
+
+  @Transactional
+  public ResponseUser modifyUser(Id<User, Long> id, RequestModifyUser modifyUser) {
+    var user =
+        userRepository
+            .findById(id.getValue())
+            .orElseThrow(() -> new NotFoundException(User.class, id.getValue()));
+
+    user.change(modifyUser.getName(), modifyUser.getPhone(), modifyUser.getEmail());
+
+    if (StringUtils.isNotBlank(modifyUser.getPassword())) {
+      user.changePassword(passwordEncoder.encode(modifyUser.getPassword()));
+    }
 
     return toUserDto(user);
   }

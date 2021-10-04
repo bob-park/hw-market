@@ -1,5 +1,6 @@
 package com.hw.userservice.commons.entity;
 
+import com.hw.userservice.commons.entity.base.BaseEntity;
 import com.hw.userservice.commons.entity.base.BaseTimeEntity;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
@@ -8,10 +9,11 @@ import org.checkerframework.common.aliasing.qual.Unique;
 import javax.persistence.*;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Entity
 @Table(name = "users")
-public class User extends BaseTimeEntity {
+public class User extends BaseEntity {
 
   @Id @GeneratedValue private Long id;
 
@@ -86,6 +88,24 @@ public class User extends BaseTimeEntity {
 
   public Role getRole() {
     return role;
+  }
+
+  public void changePassword(String encryptPassword) {
+    this.password = encryptPassword;
+  }
+
+  public void change(String name, String phone, String email) {
+    if (isNotEmpty(name)) {
+      this.name = name;
+    }
+
+    if (isNotEmpty(phone)) {
+      this.phone = phone;
+    }
+
+    if (isNotEmpty(email)) {
+      this.email = email;
+    }
   }
 
   @Override

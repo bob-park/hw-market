@@ -11,7 +11,6 @@ import com.hw.userservice.commons.security.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
@@ -19,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Configuration
-@EnableJpaAuditing
 public class AppConfiguration {
 
   @Value("${token.issuer}")
@@ -62,4 +60,5 @@ public class AppConfiguration {
   public JwtUtil jwtUtil() {
     return new JwtUtil(secret, issuer, expirationTime);
   }
+
 }

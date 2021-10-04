@@ -1,7 +1,9 @@
 package com.hw.userservice.commons.security.provider;
 
 import com.hw.core.exception.NotFoundException;
+import com.hw.core.model.commons.Id;
 import com.hw.userservice.commons.dto.user.ResponseUser;
+import com.hw.userservice.commons.entity.User;
 import com.hw.userservice.commons.security.model.*;
 import com.hw.userservice.commons.security.util.JwtUtil;
 import com.hw.userservice.service.user.UserService;
@@ -62,7 +64,12 @@ public class SecurityAuthenticationProvider implements AuthenticationProvider {
   private String newToken(ResponseUser user) {
 
     JwtClaim jwtClaim =
-        new JwtClaim(user.getUserId(), user.getName(), user.getEmail(), user.getRole());
+        new JwtClaim(
+            Id.of(User.class, user.getId()),
+            user.getUserId(),
+            user.getName(),
+            user.getEmail(),
+            user.getRole());
 
     return jwtUtil.newToken(jwtClaim.toClaims());
   }

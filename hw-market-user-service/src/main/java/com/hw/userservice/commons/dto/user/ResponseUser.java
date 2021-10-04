@@ -4,6 +4,7 @@ import com.hw.userservice.commons.entity.Role;
 
 public class ResponseUser {
 
+  private final Long id;
   private final String userId;
   private final String name;
   private final String phone;
@@ -12,10 +13,11 @@ public class ResponseUser {
   private final Role role;
 
   private ResponseUser(Builder builder) {
-    this(builder.userId, builder.name, builder.phone, builder.email, builder.role);
+    this(builder.id, builder.userId, builder.name, builder.phone, builder.email, builder.role);
   }
 
-  private ResponseUser(String userId, String name, String phone, String email, Role role) {
+  private ResponseUser(Long id, String userId, String name, String phone, String email, Role role) {
+    this.id = id;
     this.userId = userId;
     this.name = name;
     this.phone = phone;
@@ -25,6 +27,10 @@ public class ResponseUser {
 
   public static Builder builder() {
     return new Builder();
+  }
+
+  public Long getId() {
+    return id;
   }
 
   public String getUserId() {
@@ -48,11 +54,17 @@ public class ResponseUser {
   }
 
   public static class Builder {
+    private Long id;
     private String userId;
     private String name;
     private String phone;
     private String email;
     private Role role;
+
+    public Builder id(Long id) {
+      this.id = id;
+      return this;
+    }
 
     public Builder userId(String userId) {
       this.userId = userId;

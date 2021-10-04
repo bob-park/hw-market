@@ -1,8 +1,9 @@
 package com.hw.userservice.service.user;
 
+import com.hw.core.model.commons.Id;
 import com.hw.userservice.commons.dto.user.RequestUser;
 import com.hw.userservice.commons.dto.user.ResponseUser;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import com.hw.userservice.commons.entity.User;
 
 public interface UserService {
 
@@ -11,4 +12,6 @@ public interface UserService {
   ResponseUser login(String userId, String password);
 
   ResponseUser getUserByUserId(String userId);
+
+  ResponseUser getById(Id<User, Long> id);
 }

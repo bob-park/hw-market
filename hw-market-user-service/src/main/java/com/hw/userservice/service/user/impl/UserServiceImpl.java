@@ -1,5 +1,7 @@
 package com.hw.userservice.service.user.impl;
 
+import com.hw.core.exception.NotFoundException;
+import com.hw.core.model.commons.Id;
 import com.hw.userservice.commons.dto.user.RequestUser;
 import com.hw.userservice.commons.dto.user.ResponseUser;
 import com.hw.userservice.commons.entity.User;
@@ -7,14 +9,10 @@ import com.hw.userservice.repository.user.UserRepository;
 import com.hw.userservice.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
 
 @Service
 @Transactional(readOnly = true)
@@ -41,12 +39,17 @@ public class UserServiceImpl implements UserService {
 
     userRepository.save(user);
 
-    return ResponseUser.builder()
-        .userId(user.getUserId())
-        .name(user.getName())
-        .email(user.getEmail())
-        .phone(user.getPhone())
-        .build();
+    return toUserDto(user);
+  }
+
+  @Override
+  public ResponseUser getById(Id<User, Long> id) {
+    User user =
+        userRepository
+            .findById(id.getValue())
+            .orElseThrow(() -> new NotFoundException(User.class, id.getValue()));
+
+    return toUserDto(user);
   }
 
   @Override
@@ -56,12 +59,7 @@ public class UserServiceImpl implements UserService {
             .findByUserId(userId)
             .orElseThrow(() -> new UsernameNotFoundException(userId));
 
-    return ResponseUser.builder()
-        .userId(user.getUserId())
-        .name(user.getName())
-        .email(user.getEmail())
-        .phone(user.getPhone())
-        .build();
+    return toUserDto(user);
   }
 
   @Override
@@ -76,7 +74,13 @@ public class UserServiceImpl implements UserService {
       throw new IllegalArgumentException("Not correct password.");
     }
 
+    return toUserDto(user);
+  }
+
+  private ResponseUser toUserDto(User user) {
+
     return ResponseUser.builder()
+        .id(user.getId())
         .userId(user.getUserId())
         .name(user.getName())
         .email(user.getEmail())

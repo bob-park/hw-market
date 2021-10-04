@@ -1,17 +1,21 @@
 package com.hw.userservice.commons.security.model;
 
+import com.hw.core.model.commons.Id;
 import com.hw.userservice.commons.entity.Role;
+import com.hw.userservice.commons.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.impl.DefaultClaims;
 
 public class JwtClaim {
 
+  private final Id<User, Long> id;
   private final String userId;
   private final String name;
   private final String email;
   private final Role role;
 
-  public JwtClaim(String userId, String name, String email, Role role) {
+  public JwtClaim(Id<User, Long> id, String userId, String name, String email, Role role) {
+    this.id = id;
     this.userId = userId;
     this.name = name;
     this.email = email;
@@ -21,6 +25,7 @@ public class JwtClaim {
   public Claims toClaims() {
     Claims claims = new DefaultClaims();
 
+    claims.put("id", id.getValue());
     claims.put("userId", userId);
     claims.put("name", name);
     claims.put("email", email);
@@ -29,6 +34,10 @@ public class JwtClaim {
     claims.setSubject(userId);
 
     return claims;
+  }
+
+  public Id<User, Long> getId() {
+    return id;
   }
 
   public String getUserId() {

@@ -41,6 +41,6 @@ public class UserController {
   public ApiResult<ResponseUser> me(
       @AuthenticationPrincipal SecurityAuthentication authentication) {
 
-    return ok(userService.getUserByUserId(authentication.getUserId()));
+    return ok(userService.getById(authentication.getId()));
   }
 }

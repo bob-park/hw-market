@@ -1,12 +1,10 @@
 package com.hw.apigatewayservice.commons.filter;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hw.core.model.api.response.ApiResult;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -69,14 +67,22 @@ public class AuthorizationHeaderFilter
     String subject = null;
 
     try {
-      JWTVerifier jwtVerifier =
-          JWT.require(Algorithm.HMAC512(env.getProperty("token.secret")))
-              .withIssuer(env.getProperty("token.issuer"))
-              .build();
+      //      JWTVerifier jwtVerifier =
+      //          JWT.require(Algorithm.HMAC512(env.getProperty("token.secret")))
+      //              .withIssuer(env.getProperty("token.issuer"))
+      //              .build();
+      //
+      //      DecodedJWT verify = jwtVerifier.verify(jwt);
+      //
+      //      subject = verify.getPayload();
 
-      DecodedJWT verify = jwtVerifier.verify(jwt);
+      Claims claimes =
+          Jwts.parser()
+              .setSigningKey(env.getProperty("token.secret"))
+              .parseClaimsJws(jwt)
+              .getBody();
 
-      subject = verify.getPayload();
+      subject = claimes.getSubject();
 
     } catch (Exception e) {
       returnValue = false;

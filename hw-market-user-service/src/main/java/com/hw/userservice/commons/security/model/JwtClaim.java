@@ -26,6 +26,8 @@ public class JwtClaim {
     claims.put("email", email);
     claims.put("role", role.getValue());
 
+    claims.setSubject(userId);
+
     return claims;
   }
 

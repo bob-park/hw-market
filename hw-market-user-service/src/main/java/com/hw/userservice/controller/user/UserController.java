@@ -30,9 +30,9 @@ public class UserController {
     return ok(userService.createUser(requestUser));
   }
 
-  @GetMapping(path = "{userId}")
-  public ApiResult<ResponseUser> getUser(@PathVariable String userId) {
-    return ok(userService.getUserByUserId(userId));
+  @GetMapping(path = "{id}")
+  public ApiResult<ResponseUser> getUser(@PathVariable Long id) {
+    return ok(userService.getById(id));
   }
 
   @GetMapping(path = "me")

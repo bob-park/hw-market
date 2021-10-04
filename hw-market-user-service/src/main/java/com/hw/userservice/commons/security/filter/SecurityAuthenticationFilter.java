@@ -1,5 +1,7 @@
 package com.hw.userservice.commons.security.filter;
 
+import com.hw.core.model.commons.Id;
+import com.hw.userservice.commons.entity.User;
 import com.hw.userservice.commons.security.model.SecurityAuthentication;
 import com.hw.userservice.commons.security.model.SecurityAuthenticationToken;
 import com.hw.userservice.commons.security.util.JwtUtil;
@@ -60,6 +62,7 @@ public class SecurityAuthenticationFilter extends GenericFilterBean {
             response.setHeader(AUTH_TOKEN_HEADER, refreshedToken);
           }
 
+          Id<User, Long> id = Id.of(User.class, claims.get("id", Long.class));
           String userId = claims.get("userId", String.class);
           String name = claims.get("name", String.class);
           String email = claims.get("email", String.class);
@@ -70,7 +73,7 @@ public class SecurityAuthenticationFilter extends GenericFilterBean {
 
             SecurityAuthenticationToken authentication =
                 new SecurityAuthenticationToken(
-                    new SecurityAuthentication(userId, name, email), null, authorities);
+                    new SecurityAuthentication(id, userId, name, email), null, authorities);
 
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authentication);

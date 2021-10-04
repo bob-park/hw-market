@@ -9,6 +9,7 @@ import org.checkerframework.common.aliasing.qual.Unique;
 import javax.persistence.*;
 
 import static org.apache.commons.lang3.ObjectUtils.defaultIfNull;
+import static org.apache.commons.lang3.ObjectUtils.isNotEmpty;
 
 @Entity
 @Table(name = "users")
@@ -87,6 +88,24 @@ public class User extends BaseEntity {
 
   public Role getRole() {
     return role;
+  }
+
+  public void changePassword(String encryptPassword) {
+    this.password = encryptPassword;
+  }
+
+  public void change(String name, String phone, String email) {
+    if (isNotEmpty(name)) {
+      this.name = name;
+    }
+
+    if (isNotEmpty(phone)) {
+      this.phone = phone;
+    }
+
+    if (isNotEmpty(email)) {
+      this.email = email;
+    }
   }
 
   @Override

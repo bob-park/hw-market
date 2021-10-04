@@ -14,6 +14,12 @@ import static com.hw.core.model.api.response.ApiResult.error;
 @RestControllerAdvice
 public class RestControllerHandler {
 
+  @ExceptionHandler(UnauthorizedException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public <T> ApiResult<T> handleUnauthorized(UnauthorizedException e) {
+    return error(e);
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public <T> ApiResult<T> handleNotValid(MethodArgumentNotValidException e) {
